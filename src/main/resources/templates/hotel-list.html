@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hotel Management</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .hotel-image {
+            width: 100%; /* Ensures image covers the full width */
+            height: 150px; /* Adjust height as needed */
+            object-fit: contain; /* Ensures the full image is visible */
+            border-radius: 8px; /* Slightly rounded corners */
+            background-color: white; /* Ensures no unwanted background */
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2 class="text-center">Hotel List</h2>
+
+
+    <div th:if="${message != null and !#strings.isEmpty(message)}"
+         class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <a href="/hotels/add" class="btn btn-success mb-3">Add Hotel</a>
+
+    <div class="row">
+        <div class="col-md-4 mb-4" th:each="hotel : ${hotels}">
+            <div class="card">
+
+                <img th:src="${hotel.image != null ? hotel.image : 'https://your-bucket-name.s3.amazonaws.com/default-hotel.jpg'}"
+                     class="card-img-top hotel-image"
+                     alt="Hotel Image">
+
+                <div class="card-body text-center">
+                    <h5 class="card-title" th:text="${hotel.name}"></h5>
+                    <button class="btn btn-info" data-bs-toggle="modal" th:attr="data-bs-target='#hotelModal-' + ${hotel.id}">View Details</button>
+                    <a th:href="@{/hotels/edit/{id}(id=${hotel.id})}" class="btn btn-primary">Edit</a>
+                    <a th:href="@{/hotels/delete/{id}(id=${hotel.id})}" class="btn btn-danger"
+                       onclick="return confirm('Are you sure you want to delete this hotel?');">
+                        Delete
+                    </a>
+                </div>
+            </div>
+
+
+            <div class="modal fade" th:id="'hotelModal-' + ${hotel.id}" tabindex="-1" aria-labelledby="hotelModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" th:text="${hotel.name}"></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img th:src="${hotel.image}" class="img-fluid rounded mb-3" style="height: 200px; width: 100%; object-fit: cover;" alt="Hotel Image">
+                            <p><strong>Location:</strong> <span th:text="${hotel.location}"></span></p>
+                            <p><strong>Contact:</strong> <span th:text="${hotel.contact}"></span></p>
+                            <p><strong>Description:</strong> <span th:text="${hotel.description}"></span></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <a th:href="@{/hotels/edit/{id}(id=${hotel.id})}" class="btn btn-primary">Edit Hotel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- End of col-md-4 -->
+    </div> <!-- End of row -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

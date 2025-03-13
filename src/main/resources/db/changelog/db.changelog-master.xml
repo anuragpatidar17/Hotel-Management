@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="admin">
+        <createTable tableName="hotels">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)" />
+            <column name="location" type="varchar(255)" />
+            <column name="contact" type="varchar(255)" />
+            <column name="description" type="text" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="admin">
+        <createTable tableName="rooms">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="room_type" type="varchar(100)"/>
+            <column name="price_per_night" type="decimal(10,2)"/>
+            <column name="available" type="boolean"/>
+            <column name="hotel_id" type="bigint">
+                <constraints foreignKeyName="fk_room_hotel" referencedTableName="hotels" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="admin">
+        <createTable tableName="bookings">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="customer_name" type="varchar(255)"/>
+            <column name="customer_email" type="varchar(255)"/>
+            <column name="check_in_date" type="date"/>
+            <column name="check_out_date" type="date"/>
+            <column name="room_id" type="bigint">
+                <constraints foreignKeyName="fk_booking_room" referencedTableName="rooms" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
