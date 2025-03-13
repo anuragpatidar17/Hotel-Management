@@ -1,0 +1,34 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # Runs when code is pushed to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: ’21’
+
+    - name: Build JAR file
+      run: mvn clean package -DskipTests
+
+    - name: Copy JAR to EC2
+      run: |
+        scp -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} target/hotelManagement-0.0.1-SNAPSHOT.jar ec2-user@${{ secrets.EC2_HOST }}:/home/ubuntu/hotelManagement.jar
+
+    - name: Restart application on EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+        sudo fuser -k 8080/tcp
+        nohup java -jar /home/ubuntu/hotelManagement.jar > output.log 2>&1 &
+        EOF
